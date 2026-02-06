@@ -1,0 +1,9 @@
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+  
+  - name: Install dependencies
+    run: npm install  # 这会根据 package.json 安装你刚才添加的集成包
+
+  - name: Build with Astro
+    run: npm run build # 这里的构建过程会自动触发 astro.config.mjs 中的集成功能
