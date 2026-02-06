@@ -1,9 +1,33 @@
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
-  
-  - name: Install dependencies
-    run: npm install  # 这会根据 package.json 安装你刚才添加的集成包
+name: Deploy to GitHub Pages
 
-  - name: Build with Astro
-    run: npm run build # 这里的构建过程会自动触发 astro.config.mjs 中的集成功能
+on:
+  push:
+    branches: [main] # 当 main 分支有变动时触发
+  workflow_dispatch: # 允许手动点击按钮触发
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+
+      - name: Install, bundle, and autodetect package manager
+        uses: withastro/action@v3
+        # 这个官方 Action 会自动处理集成插件的安装和构建
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
